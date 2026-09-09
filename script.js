@@ -20,6 +20,36 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const orderNoRegex = /^2024\d{6}$/;
 const productCodeRegex = /^[A-Za-z]{2}\d{2}-[A-Za-z]\d{3}-[A-Za-z]{2}\d$/;
 
+const errorMessages = {
+    "full-name": "Full name is required.",
+    "email": "Enter a valid email address.",
+    "order-no": "Order number must be 10 digits starting with 2024.",
+    "product-code": "Product code must follow XX##-X###-XX# format.",
+    "quantity": "Quantity must be a positive integer.",
+    "complaints-group": "Select at least one complaint reason.",
+    "complaint-description": "Description must be at least 20 characters.",
+    "solutions-group": "Select a desired solution.",
+    "solution-description": "Description must be at least 20 characters.",
+};
+
+function getErrorEl(el) {
+    let errorEl = el.nextElementSibling;
+    if (!errorEl || !errorEl.classList.contains("error-message")) {
+        errorEl = document.createElement("span");
+        errorEl.classList.add("error-message");
+        errorEl.style.color = "red";
+        errorEl.style.fontSize = "12px";
+        errorEl.style.display = "block";
+        el.insertAdjacentElement("afterend", errorEl);
+    }
+    return errorEl;
+}
+
+function showError(el, key, valid) {
+    const errorEl = getErrorEl(el);
+    errorEl.textContent = valid ? "" : errorMessages[key];
+}
+
 function isCheckedGroup(name) {
     return Array.from(document.getElementsByName(name)).some((el) => el.checked);
 }
@@ -54,46 +84,64 @@ function setBorderColor(el, valid) {
 }
 
 fullName.addEventListener("change", () => {
-    setBorderColor(fullName, validateForm()["full-name"]);
+    const valid = validateForm()["full-name"];
+    setBorderColor(fullName, valid);
+    showError(fullName, "full-name", valid);
 });
 
 email.addEventListener("change", () => {
-    setBorderColor(email, validateForm()["email"]);
+    const valid = validateForm()["email"];
+    setBorderColor(email, valid);
+    showError(email, "email", valid);
 });
 
 orderNo.addEventListener("change", () => {
-    setBorderColor(orderNo, validateForm()["order-no"]);
+    const valid = validateForm()["order-no"];
+    setBorderColor(orderNo, valid);
+    showError(orderNo, "order-no", valid);
 });
 
 productCode.addEventListener("change", () => {
-    setBorderColor(productCode, validateForm()["product-code"]);
+    const valid = validateForm()["product-code"];
+    setBorderColor(productCode, valid);
+    showError(productCode, "product-code", valid);
 });
 
 quantity.addEventListener("change", () => {
-    setBorderColor(quantity, validateForm()["quantity"]);
+    const valid = validateForm()["quantity"];
+    setBorderColor(quantity, valid);
+    showError(quantity, "quantity", valid);
 });
 
 document.getElementsByName("complaint").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
-        setBorderColor(complaintsGroup, validateForm()["complaints-group"]);
+        const valid = validateForm()["complaints-group"];
+        setBorderColor(complaintsGroup, valid);
+        showError(complaintsGroup.querySelector("legend"), "complaints-group", valid);
     });
 });
 
 complaintDescription.addEventListener("change", () => {
     if (otherComplaint.checked) {
-        setBorderColor(complaintDescription, validateForm()["complaint-description"]);
+        const valid = validateForm()["complaint-description"];
+        setBorderColor(complaintDescription, valid);
+        showError(complaintDescription, "complaint-description", valid);
     }
 });
 
 document.getElementsByName("solutions").forEach((radio) => {
     radio.addEventListener("change", () => {
-        setBorderColor(solutionsGroup, validateForm()["solutions-group"]);
+        const valid = validateForm()["solutions-group"];
+        setBorderColor(solutionsGroup, valid);
+        showError(solutionsGroup.querySelector("legend"), "solutions-group", valid);
     });
 });
 
 solutionDescription.addEventListener("change", () => {
     if (otherSolution.checked) {
-        setBorderColor(solutionDescription, validateForm()["solution-description"]);
+        const valid = validateForm()["solution-description"];
+        setBorderColor(solutionDescription, valid);
+        showError(solutionDescription, "solution-description", valid);
     }
 });
 
@@ -104,19 +152,38 @@ form.addEventListener("submit", (e) => {
     const formIsValid = isValid(validation);
 
     setBorderColor(fullName, validation["full-name"]);
+    showError(fullName, "full-name", validation["full-name"]);
+
     setBorderColor(email, validation["email"]);
+    showError(email, "email", validation["email"]);
+
     setBorderColor(orderNo, validation["order-no"]);
+    showError(orderNo, "order-no", validation["order-no"]);
+
     setBorderColor(productCode, validation["product-code"]);
+    showError(productCode, "product-code", validation["product-code"]);
+
     setBorderColor(quantity, validation["quantity"]);
+    showError(quantity, "quantity", validation["quantity"]);
+
     setBorderColor(complaintsGroup, validation["complaints-group"]);
+    showError(complaintsGroup.querySelector("legend"), "complaints-group", validation["complaints-group"]);
+
     setBorderColor(solutionsGroup, validation["solutions-group"]);
+    showError(solutionsGroup.querySelector("legend"), "solutions-group", validation["solutions-group"]);
 
     if (otherComplaint.checked) {
         setBorderColor(complaintDescription, validation["complaint-description"]);
+        showError(complaintDescription, "complaint-description", validation["complaint-description"]);
+    } else {
+        showError(complaintDescription, "complaint-description", true);
     }
 
     if (otherSolution.checked) {
         setBorderColor(solutionDescription, validation["solution-description"]);
+        showError(solutionDescription, "solution-description", validation["solution-description"]);
+    } else {
+        showError(solutionDescription, "solution-description", true);
     }
 
     if (formIsValid) {
