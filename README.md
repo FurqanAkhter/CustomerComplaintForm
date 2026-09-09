@@ -1,3 +1,7 @@
+
+https://github.com/user-attachments/assets/d63cf5e2-da72-4b13-9561-ddb206c2c613
+
+
 📝 Customer Complaint Form
 
 A responsive, client-side web application designed for collecting, validating, and processing customer complaints and solution requests. Built using HTML5, CSS3, and modern JavaScript, this project features real-time dynamic form validation with Regular Expressions (RegEx) and visual feedback indicators.
